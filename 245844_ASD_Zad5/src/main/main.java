@@ -16,14 +16,13 @@ public class main {
 
 		System.out.println("Liczba iteracji (I): ");
 		iter = Integer.parseInt(odczyt.nextLine());
-		
+
 		System.out.println("Liczba najgorszych rozwiązań odrzucanych przez algorytm (R): ");
 		odrzuc = Integer.parseInt(odczyt.nextLine());
 
-		algorytm.doDziela(populacja, iter, odrzuc);
+		algorytm.doIteracje(populacja, iter, odrzuc);
 
 		System.out.println("Zbiór rozwiązań najlepszych: ");
-
 
 		System.out.println("Wykonanic kolejną serie iteracji (1) albo zakończyc działanie programu (0): ");
 		int walue = Integer.parseInt(odczyt.nextLine());

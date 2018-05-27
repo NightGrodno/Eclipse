@@ -15,25 +15,26 @@ public class algorytm {
 	static ArrayList<String> alphabet = new ArrayList<String>(
 			Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"));
 
-	public static void doDziela(int populacja, int iter, int R) {
+	public static void doIteracje(int populacja, int iter, int R) {
 		generPopPoczat(populacja); // generacja populacji początkowej
-		doIteracje(populacja, iter, R);
-
-	}
-
-	private static void doIteracje(int populacja, float iter, int R) {
 		float MFC = MFC(); // oblicz uśrednionej dla wszystkich osobników wartość
 		float MFC_FC = 0;
 		for (Map.Entry entry : popRozw.entrySet()) {
 			// System.out.println("Key: " + entry.getKey() + " Value: " + entry.getValue());
 			MFC_FC = MFC / (int) entry.getValue();
-			
-			if (MFC_FC > 1.1)
+			int czesc = (populacja - R) / 4;
+			int buffer1 = 0;
+			int buffer2 = 0;
+			if (MFC_FC > 1.1 && buffer1 > 3 * czesc) {
 				mutacja((String) entry.getKey(), MFC_FC, MFC);
-			else {
-				if (MFC_FC > 0.9)
+				buffer1++;
+			} else {
+				if (MFC_FC > 0.9 && buffer2 > 1 * czesc) {
 					mutacja((String) entry.getKey(), MFC_FC, MFC);
+					buffer2++;
+				}
 			}
+			generPopPoczat(R);
 		}
 	}
 
