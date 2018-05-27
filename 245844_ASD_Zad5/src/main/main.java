@@ -23,7 +23,7 @@ public class main {
 		algorytm.doDziela(populacja, iter, odrzuc);
 
 		System.out.println("Zbiór rozwiązań najlepszych: ");
-		// costam
+
 
 		System.out.println("Wykonanic kolejną serie iteracji (1) albo zakończyc działanie programu (0): ");
 		int walue = Integer.parseInt(odczyt.nextLine());

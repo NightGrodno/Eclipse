@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class algorytm {
+	static int liczbaEl = create.tab.length;
 	static Map<String, Integer> popRozw = new HashMap<String, Integer>(); // poczatkowa mapa populacji potencjalnych
 																			// rozwiązań
 	static Map<String, Integer> mapRozw = new HashMap<String, Integer>(); // mapa populacji potencjalnych rozwiązań
@@ -16,35 +17,30 @@ public class algorytm {
 
 	public static void doDziela(int populacja, int iter, int R) {
 		generPopPoczat(populacja); // generacja populacji początkowej
-		doIteracje(iter, R);
+		doIteracje(populacja, iter, R);
 
 	}
 
-	private static void doIteracje(float iter, int R) {
+	private static void doIteracje(int populacja, float iter, int R) {
 		float MFC = MFC(); // oblicz uśrednionej dla wszystkich osobników wartość
 		float MFC_FC = 0;
-		for (int value : popRozw.values()) {	
-			//System.out.println(value);
-			MFC_FC = MFC / value;
-			if (MFC_FC > 1.2) {
-				if(mutacja(MFC_FC)>MFC_FC)
-
-			} else {
-				if (MFC_FC > 1) {
-
-				}
-
+		for (Map.Entry entry : popRozw.entrySet()) {
+			// System.out.println("Key: " + entry.getKey() + " Value: " + entry.getValue());
+			MFC_FC = MFC / (int) entry.getValue();
+			
+			if (MFC_FC > 1.1)
+				mutacja((String) entry.getKey(), MFC_FC, MFC);
+			else {
+				if (MFC_FC > 0.9)
+					mutacja((String) entry.getKey(), MFC_FC, MFC);
 			}
-
-			System.out.println(MFC_FC);
 		}
-
 	}
 
 	public static void generPopPoczat(int populacja) { // metoda generuje populacje poczatkawa
 		for (int p = 1; p <= populacja; p++) {
 			Random rnd = new Random();
-			int liczbaEl = create.tab.length;
+			// int liczbaEl = create.tab.length;
 			int k = 0;
 			ArrayList<String> alphabetCopy = new ArrayList<String>();
 			alphabetCopy.addAll(alphabet);
@@ -86,10 +82,22 @@ public class algorytm {
 		return suma / dzielnik;
 	}
 
-	private static float mutacja(float MFC_FC) {
-		float newMFC_FC;
-			
-		return newMFC_FC;
+	private static void mutacja(String key, float MFC_FC, float MFC) {
+		float newMFC_FC = 0;
+		String newOsobnik = "";
+		Random rnd = new Random();
+		int randomIndex1 = rnd.nextInt(liczbaEl - 1);
+		int randomIndex2 = rnd.nextInt(liczbaEl - 1);
+		while (randomIndex1 == randomIndex2)
+			randomIndex2 = rnd.nextInt(liczbaEl - 1);
+		newOsobnik = key.replace(alphabet.get(randomIndex1), alphabet.get(randomIndex2));
+		int newFC = FC(newOsobnik);
+		newMFC_FC = MFC / newFC;
+
+		if (newMFC_FC > MFC_FC)
+			mapRozw.put(newOsobnik, newFC);
+		mapRozw.put(key, (int) (MFC_FC * MFC));
+
 	}
 
 	static void contin(int iter) {
