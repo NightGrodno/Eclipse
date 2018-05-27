@@ -11,13 +11,13 @@ public class main {
 		// TODO Auto-generated method stub
 		create.create("z5data.csv");
 
-//		System.out.println("Populacja potencjalnych rozwiązań o rozmiarze P z przedziału 30-1000: ");
-//		Scanner odczyt = new Scanner(System.in); // obiekt do odebrania danych od użytkownika
-//		populacja = Integer.parseInt(odczyt.nextLine());
-//
-//		System.out.println("Liczba iteracji I: ");
-//		liter = Integer.parseInt(odczyt.nextLine());
-//		odczyt.close();
+		System.out.println("Populacja potencjalnych rozwiązań o rozmiarze P z przedziału 30-1000: ");
+		Scanner odczyt = new Scanner(System.in); // obiekt do odebrania danych od użytkownika
+		populacja = Integer.parseInt(odczyt.nextLine());
+
+		System.out.println("Liczba iteracji I: ");
+		liter = Integer.parseInt(odczyt.nextLine());
+		odczyt.close();
 
 		algorytm.doDziela(populacja, liter);
 
