@@ -7,15 +7,37 @@ import java.util.Map;
 import java.util.Random;
 
 public class algorytm {
-	static Map<String, Integer> popRozw = new HashMap<String, Integer>(); // mapa populacji potencjalnych rozwiązań
+	static Map<String, Integer> popRozw = new HashMap<String, Integer>(); // poczatkowa mapa populacji potencjalnych
+																			// rozwiązań
+	static Map<String, Integer> mapRozw = new HashMap<String, Integer>(); // mapa populacji potencjalnych rozwiązań
 	static String osobnik = "";
 	static ArrayList<String> alphabet = new ArrayList<String>(
 			Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"));
 
-	public static void doDziela(int populacja, int liter) {
+	public static void doDziela(int populacja, int iter, int R) {
 		generPopPoczat(populacja); // generacja populacji początkowej
-		System.out.println(popRozw.size());
-		MFC(); // oblicz uśrednionej dla wszystkich osobników wartość
+		doIteracje(iter, R);
+
+	}
+
+	private static void doIteracje(float iter, int R) {
+		float MFC = MFC(); // oblicz uśrednionej dla wszystkich osobników wartość
+		float MFC_FC = 0;
+		for (int value : popRozw.values()) {	
+			//System.out.println(value);
+			MFC_FC = MFC / value;
+			if (MFC_FC > 1.2) {
+				if(mutacja(MFC_FC)>MFC_FC)
+
+			} else {
+				if (MFC_FC > 1) {
+
+				}
+
+			}
+
+			System.out.println(MFC_FC);
+		}
 
 	}
 
@@ -54,7 +76,24 @@ public class algorytm {
 		return FC;
 	}
 
-	private static void MFC() { // metoda obliczya uśrednioną dla wszystkich osobników wartość
+	private static float MFC() { // metoda obliczya uśrednioną dla wszystkich osobników wartość
+		int suma = 0;
+		int dzielnik = 0;
+		for (int value : popRozw.values()) {
+			suma = suma + value;
+			dzielnik++;
+		}
+		return suma / dzielnik;
+	}
+
+	private static float mutacja(float MFC_FC) {
+		float newMFC_FC;
+			
+		return newMFC_FC;
+	}
+
+	static void contin(int iter) {
 
 	}
+
 }
