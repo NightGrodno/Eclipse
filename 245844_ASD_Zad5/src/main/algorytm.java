@@ -5,8 +5,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.Scanner;
 
 public class algorytm {
+	static int FC_max = 0;
+	static String key_max = "";
 	static int liczbaEl = create.tab.length;
 	static Map<String, Integer> popRozw = new HashMap<String, Integer>(); // poczatkowa mapa populacji potencjalnych
 																			// rozwiązań
@@ -16,26 +19,66 @@ public class algorytm {
 			Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"));
 
 	public static void doIteracje(int populacja, int iter, int R) {
+
 		generPopPoczat(populacja); // generacja populacji początkowej
-		float MFC = MFC(); // oblicz uśrednionej dla wszystkich osobników wartość
-		float MFC_FC = 0;
-		for (Map.Entry entry : popRozw.entrySet()) {
-			// System.out.println("Key: " + entry.getKey() + " Value: " + entry.getValue());
-			MFC_FC = MFC / (int) entry.getValue();
-			int czesc = (populacja - R) / 4;
+
+		for (int iteracja = 1; iteracja <= iter; iteracja++) {
+			float MFC = MFC(); // oblicz uśrednionej dla wszystkich osobników wartość
+			float MFC_FC = 0;
+			int czesc = (popRozw.size() - R) / 4;
 			int buffer1 = 0;
 			int buffer2 = 0;
-			if (MFC_FC > 1.1 && buffer1 > 3 * czesc) {
-				mutacja((String) entry.getKey(), MFC_FC, MFC);
-				buffer1++;
-			} else {
-				if (MFC_FC > 0.9 && buffer2 > 1 * czesc) {
-					mutacja((String) entry.getKey(), MFC_FC, MFC);
-					buffer2++;
+			for (Map.Entry entry : popRozw.entrySet()) {
+				int FC = (int) entry.getValue();
+				MFC_FC = MFC / FC;
+				if (MFC_FC > 1.1 && buffer1 < 3 * czesc) {
+					mutacja((String) entry.getKey(), FC);
+					buffer1++;
+				} else {
+					if (MFC_FC > 1.0 && buffer2 < 1 * czesc) {
+						mutacja((String) entry.getKey(), FC);
+						buffer2++;
+					}
 				}
 			}
-			generPopPoczat(R);
+			if (iteracja % 10 == 0) {
+				System.out.println("Zbiór najlepszych  rozwiązań po 10 iteracjach: \n");
+				System.out.println(mapRozw + "\n");
+
+				Scanner odczyt = new Scanner(System.in);
+				System.out.println("Wykonanic kolejną serie iteracji (1) albo zakończyc działanie programu (0): ");
+				int walue = Integer.parseInt(odczyt.nextLine());
+				if (walue == 1) {
+					System.out.println("Liczba iteracji I: ");
+					iter = Integer.parseInt(odczyt.nextLine());
+					iteracja = 0;
+				} else {
+					for (Map.Entry entry : mapRozw.entrySet()) {
+						if (FC_max < (int) entry.getValue()) {
+							FC_max = (int) entry.getValue();
+							key_max = (String) entry.getKey();
+						}
+					}
+					System.out.println("Rozwiązanie najlepsze: " + key_max + "– " + FC_max);
+					System.out.println("Koniec programu...");
+					odczyt.close();
+					System.exit(0);
+				}
+			}
+
+			if (mapRozw.size() != 0) {
+				popRozw.clear();
+				popRozw.putAll(mapRozw);
+				mapRozw.clear();
+			}
+
+			generPopPoczat(popRozw.size() + R);
+
 		}
+		System.out.println("Zbiór najlepszych  rozwiązań: \n");
+		System.out.println(mapRozw + "\n");
+		System.out.println("Rozwiązanie najlepsze: " + key_max + "– " + FC_max);
+		System.out.println("Koniec programu...");
 	}
 
 	public static void generPopPoczat(int populacja) { // metoda generuje populacje poczatkawa
@@ -83,26 +126,22 @@ public class algorytm {
 		return suma / dzielnik;
 	}
 
-	private static void mutacja(String key, float MFC_FC, float MFC) {
-		float newMFC_FC = 0;
+	private static void mutacja(String key, int FC) {
 		String newOsobnik = "";
 		Random rnd = new Random();
 		int randomIndex1 = rnd.nextInt(liczbaEl - 1);
 		int randomIndex2 = rnd.nextInt(liczbaEl - 1);
-		while (randomIndex1 == randomIndex2)
+		while (randomIndex1 == randomIndex2) {
 			randomIndex2 = rnd.nextInt(liczbaEl - 1);
+		}
+		int index = key.indexOf(alphabet.get(randomIndex2));
 		newOsobnik = key.replace(alphabet.get(randomIndex1), alphabet.get(randomIndex2));
+		newOsobnik = newOsobnik.substring(0, index) + alphabet.get(randomIndex1) + newOsobnik.substring(index + 1);
 		int newFC = FC(newOsobnik);
-		newMFC_FC = MFC / newFC;
-
-		if (newMFC_FC > MFC_FC)
+		if (newFC < FC)
 			mapRozw.put(newOsobnik, newFC);
-		mapRozw.put(key, (int) (MFC_FC * MFC));
+		else
+			mapRozw.put(key, FC);
 
 	}
-
-	static void contin(int iter) {
-
-	}
-
 }
