@@ -8,9 +8,9 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class algorytm {
-	static int FC_max = 0;
-	static String key_max = "";
-	static int liczbaEl = create.tab.length;
+	static int FC_min = 0; // najliepsza całkowita przebyta droga
+	static String key_min = ""; // najliepsza ciąg
+	static int liczbaEl = create.tab.length; // liczba szaf
 	static Map<String, Integer> popRozw = new HashMap<String, Integer>(); // poczatkowa mapa populacji potencjalnych
 																			// rozwiązań
 	static Map<String, Integer> mapRozw = new HashMap<String, Integer>(); // mapa populacji potencjalnych rozwiązań
@@ -26,65 +26,67 @@ public class algorytm {
 			float MFC = MFC(); // oblicz uśrednionej dla wszystkich osobników wartość
 			float MFC_FC = 0;
 			int czesc = (popRozw.size() - R) / 4;
-			int buffer1 = 0;
-			int buffer2 = 0;
-			for (Map.Entry entry : popRozw.entrySet()) {
+			int buffer1 = 0; // rozwiązania znacząco lepsze 75% sklonowanych
+			int buffer2 = 0; // lepsze jedynie nieznacznie 25% sklonowaneych
+
+			for (Map.Entry entry : popRozw.entrySet()) { // klonowanie do nowej populacji i mutacja
 				int FC = (int) entry.getValue();
 				MFC_FC = MFC / FC;
-				if (MFC_FC > 1.1 && buffer1 < 3 * czesc) {
+				if (MFC_FC > (1.15) && buffer1 < 3 * czesc) {
 					mutacja((String) entry.getKey(), FC);
 					buffer1++;
 				} else {
-					if (MFC_FC > 1.0 && buffer2 < 1 * czesc) {
+					if (MFC_FC > (1.1) && buffer2 < 1 * czesc) {
 						mutacja((String) entry.getKey(), FC);
 						buffer2++;
 					}
 				}
 			}
+			// interakcji z użytkownikiem
 			if (iteracja % 10 == 0) {
 				System.out.println("Zbiór najlepszych  rozwiązań po 10 iteracjach: \n");
 				System.out.println(mapRozw + "\n");
 
-				Scanner odczyt = new Scanner(System.in);
-				System.out.println("Wykonanic kolejną serie iteracji (1) albo zakończyc działanie programu (0): ");
-				int walue = Integer.parseInt(odczyt.nextLine());
-				if (walue == 1) {
-					System.out.println("Liczba iteracji I: ");
-					iter = Integer.parseInt(odczyt.nextLine());
-					iteracja = 0;
-				} else {
-					for (Map.Entry entry : mapRozw.entrySet()) {
-						if (FC_max < (int) entry.getValue()) {
-							FC_max = (int) entry.getValue();
-							key_max = (String) entry.getKey();
+				if (iteracja == iter) {
+					Scanner odczyt = new Scanner(System.in);
+					System.out.println("Wykonanic kolejną serie iteracji (1) albo zakończyc działanie programu (0): ");
+					int walue = Integer.parseInt(odczyt.nextLine());
+					if (walue == 1) {
+						System.out.println("Liczba iteracji I: ");
+						iter = Integer.parseInt(odczyt.nextLine());
+						iteracja = 1;
+					} else {
+						for (Map.Entry entry : mapRozw.entrySet()) {
+							if (FC_min > (int) entry.getValue()) {
+								FC_min = (int) entry.getValue();
+								key_min = (String) entry.getKey();
+							}
 						}
+						System.out.println("Rozwiązanie najlepsze: " + key_min + "– " + FC_min);
+						System.out.println("Koniec programu...");
+						odczyt.close();
+						System.exit(0);
 					}
-					System.out.println("Rozwiązanie najlepsze: " + key_max + "– " + FC_max);
-					System.out.println("Koniec programu...");
-					odczyt.close();
-					System.exit(0);
 				}
 			}
-
 			if (mapRozw.size() != 0) {
 				popRozw.clear();
 				popRozw.putAll(mapRozw);
 				mapRozw.clear();
 			}
-
+			// generacja nowych odobnikow
 			generPopPoczat(popRozw.size() + R);
 
 		}
 		System.out.println("Zbiór najlepszych  rozwiązań: \n");
 		System.out.println(mapRozw + "\n");
-		System.out.println("Rozwiązanie najlepsze: " + key_max + "– " + FC_max);
+		System.out.println("Rozwiązanie najlepsze: " + key_min + "– " + FC_min);
 		System.out.println("Koniec programu...");
 	}
 
 	public static void generPopPoczat(int populacja) { // metoda generuje populacje poczatkawa
-		for (int p = 1; p <= populacja; p++) {
+		while (popRozw.size() < populacja) {
 			Random rnd = new Random();
-			// int liczbaEl = create.tab.length;
 			int k = 0;
 			ArrayList<String> alphabetCopy = new ArrayList<String>();
 			alphabetCopy.addAll(alphabet);

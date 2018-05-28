@@ -5,9 +5,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class create {
+public class create { // metoda generuje macierz powiązań
 
-	static int[][] tab;
+	static int[][] tab; // macierz powiązań
 
 	public static void create(String FileName) {
 		File myCSVfile = new File(FileName);
