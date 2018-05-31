@@ -22,7 +22,7 @@ public class create { // metoda generuje macierz powiązań
 				if (j == 0)
 					tab = new int[lineTokens.length][lineTokens.length];
 				for (int i = 0; i < lineTokens.length; i++) {
-					if (lineTokens[i].equals("X"))
+					if (lineTokens[i].equals("X") || lineTokens[i].equals("x"))
 						tab[j][i] = 0;
 					else
 						tab[j][i] = Integer.parseInt(lineTokens[i]);

@@ -9,7 +9,7 @@ public class main {
 
 	public static void main(String[] args) {
 
-		create.create("z5data_beta.csv"); // wczytywanie wprost z pliku tekstowego
+		create.create("test_1.csv"); // wczytywanie wprost z pliku tekstowego
 
 		Scanner odczyt = new Scanner(System.in); // obiekt do odebrania danych od użytkownika
 

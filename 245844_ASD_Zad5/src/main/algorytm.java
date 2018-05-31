@@ -2,21 +2,32 @@ package main;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 public class algorytm {
-	static int FC_min = 0; // najliepsza całkowita przebyta droga
-	static String key_min = ""; // najliepsza ciąg
+	// static int FC_min = 0; // najliepsza całkowita przebyta droga
+	// static String key_min = ""; // najliepsza ciąg
 	static int liczbaEl = create.tab.length; // liczba szaf
-	static Map<String, Integer> popRozw = new HashMap<String, Integer>(); // poczatkowa mapa populacji potencjalnych
-																			// rozwiązań
-	static Map<String, Integer> mapRozw = new HashMap<String, Integer>(); // mapa populacji potencjalnych rozwiązań
+	static Map<String, Integer> buffor = new LinkedHashMap<String, Integer>(); // mapa buffor
+	static Map<String, Integer> popRozw = new LinkedHashMap<String, Integer>(); // poczatkowa mapa populacji
+																				// potencjalnych
+	// rozwiązań
+	static Map<String, Integer> mapRozw = new LinkedHashMap<String, Integer>(); // mapa populacji potencjalnych
+																				// rozwiązań
 	static String osobnik = "";
 	static ArrayList<String> alphabet = new ArrayList<String>(
-			Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"));
+			Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m"));
 
 	public static void doIteracje(int populacja, int iter, int R) {
 
@@ -25,18 +36,18 @@ public class algorytm {
 		for (int iteracja = 1; iteracja <= iter; iteracja++) {
 			float MFC = MFC(); // oblicz uśrednionej dla wszystkich osobników wartość
 			float MFC_FC = 0;
-			int czesc = (popRozw.size() - R) / 4;
+			int czesc = (populacja - R) / 4;
 			int buffer1 = 0; // rozwiązania znacząco lepsze 75% sklonowanych
 			int buffer2 = 0; // lepsze jedynie nieznacznie 25% sklonowaneych
 
 			for (Map.Entry entry : popRozw.entrySet()) { // klonowanie do nowej populacji i mutacja
 				int FC = (int) entry.getValue();
 				MFC_FC = MFC / FC;
-				if (MFC_FC > (1.15) && buffer1 < 3 * czesc) {
+				if (MFC_FC > (1.1) && buffer1 < 3 * czesc) {
 					mutacja((String) entry.getKey(), FC);
 					buffer1++;
 				} else {
-					if (MFC_FC > (1.1) && buffer2 < 1 * czesc) {
+					if (MFC_FC > (0.9) && buffer2 < 1 * czesc) {
 						mutacja((String) entry.getKey(), FC);
 						buffer2++;
 					}
@@ -44,8 +55,11 @@ public class algorytm {
 			}
 			// interakcji z użytkownikiem
 			if (iteracja % 10 == 0) {
-				System.out.println("Zbiór najlepszych  rozwiązań po 10 iteracjach: \n");
-				System.out.println(mapRozw + "\n");
+				System.out.println("Zbiór najlepszych  rozwiązań po 10 iteracjach: ");
+				for (int i = 1; i <= 4; i++)
+					System.out.println("Element " + i + ": " + mapRozw.keySet().toArray()[i] + " – "
+							+ +mapRozw.get(mapRozw.keySet().toArray()[i]));
+				System.out.println("");
 
 				if (iteracja == iter) {
 					Scanner odczyt = new Scanner(System.in);
@@ -56,14 +70,7 @@ public class algorytm {
 						iter = Integer.parseInt(odczyt.nextLine());
 						iteracja = 1;
 					} else {
-						for (Map.Entry entry : mapRozw.entrySet()) {
-							if (FC_min > (int) entry.getValue()) {
-								FC_min = (int) entry.getValue();
-								key_min = (String) entry.getKey();
-							}
-						}
-						System.out.println("Rozwiązanie najlepsze: " + key_min + "– " + FC_min);
-						System.out.println("Koniec programu...");
+						end();
 						odczyt.close();
 						System.exit(0);
 					}
@@ -74,14 +81,15 @@ public class algorytm {
 				popRozw.putAll(mapRozw);
 				mapRozw.clear();
 			}
-			// generacja nowych odobnikow
+			// generacja nowych odobnikow i sortowanie mapy
 			generPopPoczat(popRozw.size() + R);
+			buffor.clear();
+			sortByValue(popRozw);
+			popRozw.clear();
+			popRozw.putAll(buffor);
 
 		}
-		System.out.println("Zbiór najlepszych  rozwiązań: \n");
-		System.out.println(mapRozw + "\n");
-		System.out.println("Rozwiązanie najlepsze: " + key_min + "– " + FC_min);
-		System.out.println("Koniec programu...");
+		end();
 	}
 
 	public static void generPopPoczat(int populacja) { // metoda generuje populacje poczatkawa
@@ -145,5 +153,26 @@ public class algorytm {
 		else
 			mapRozw.put(key, FC);
 
+	}
+
+	public static <K, V extends Comparable<? super V>> void sortByValue(Map<String, Integer> popRozw2) {
+		HashMap<String, Integer> result = new LinkedHashMap<>();
+		Stream<Entry<String, Integer>> st = popRozw2.entrySet().stream();
+
+		st.sorted(Comparator.comparing(e -> e.getValue())).forEach(e -> result.put(e.getKey(), e.getValue()));
+		buffor.putAll(result);
+	}
+
+	public static void end() {
+
+		System.out.println("Zbiór najlepszych  rozwiązań: ");
+		for (int i = 0; i < 4; i++)
+			System.out.println("Element " + i + ": " + mapRozw.keySet().toArray()[i] + " – "
+					+ +mapRozw.get(mapRozw.keySet().toArray()[i]));
+
+		System.out.println("\nRozwiązanie najlepsze: " + mapRozw.keySet().toArray()[0] + " – "
+				+ +mapRozw.get(mapRozw.keySet().toArray()[0]));
+
+		System.out.println("Koniec programu...");
 	}
 }
