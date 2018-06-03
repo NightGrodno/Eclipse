@@ -2,13 +2,9 @@ package main;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -16,8 +12,6 @@ import java.util.Scanner;
 import java.util.stream.Stream;
 
 public class algorytm {
-	// static int FC_min = 0; // najliepsza całkowita przebyta droga
-	// static String key_min = ""; // najliepsza ciąg
 	static int liczbaEl = create.tab.length; // liczba szaf
 	static Map<String, Integer> buffor = new LinkedHashMap<String, Integer>(); // mapa buffor
 	static Map<String, Integer> popRozw = new LinkedHashMap<String, Integer>(); // poczatkowa mapa populacji
