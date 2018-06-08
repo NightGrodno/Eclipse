@@ -14,11 +14,8 @@ import java.util.stream.Stream;
 public class algorytm {
 	static int liczbaEl = create.tab.length; // liczba szaf
 	static Map<String, Integer> buffor = new LinkedHashMap<String, Integer>(); // mapa buffor
-	static Map<String, Integer> popRozw = new LinkedHashMap<String, Integer>(); // poczatkowa mapa populacji
-																				// potencjalnych
-	// rozwiązań
-	static Map<String, Integer> mapRozw = new LinkedHashMap<String, Integer>(); // mapa populacji potencjalnych
-																				// rozwiązań
+	static Map<String, Integer> popRozw = new LinkedHashMap<String, Integer>(); // poczatkowa popul rozw.
+	static Map<String, Integer> popDoKlon = new LinkedHashMap<String, Integer>(); // populacja do klonowania
 	static String osobnik = "";
 	static ArrayList<String> alphabet = new ArrayList<String>(
 			Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m"));
@@ -47,33 +44,11 @@ public class algorytm {
 					}
 				}
 			}
-			// interakcji z użytkownikiem
-			if (iteracja % 10 == 0) {
-				System.out.println("Zbiór najlepszych  rozwiązań po 10 iteracjach: ");
-				for (int i = 1; i <= 4; i++)
-					System.out.println("Element " + i + ": " + mapRozw.keySet().toArray()[i] + " – "
-							+ +mapRozw.get(mapRozw.keySet().toArray()[i]));
-				System.out.println("");
 
-				if (iteracja == iter) {
-					Scanner odczyt = new Scanner(System.in);
-					System.out.println("Wykonanic kolejną serie iteracji (1) albo zakończyc działanie programu (0): ");
-					int walue = Integer.parseInt(odczyt.nextLine());
-					if (walue == 1) {
-						System.out.println("Liczba iteracji I: ");
-						iter = Integer.parseInt(odczyt.nextLine());
-						iteracja = 1;
-					} else {
-						end();
-						odczyt.close();
-						System.exit(0);
-					}
-				}
-			}
-			if (mapRozw.size() != 0) {
+			if (popDoKlon.size() != 0) {
 				popRozw.clear();
-				popRozw.putAll(mapRozw);
-				mapRozw.clear();
+				popRozw.putAll(popDoKlon);
+				popDoKlon.clear();
 			}
 			// generacja nowych odobnikow i sortowanie mapy
 			generPopPoczat(popRozw.size() + R);
@@ -81,6 +56,30 @@ public class algorytm {
 			sortByValue(popRozw);
 			popRozw.clear();
 			popRozw.putAll(buffor);
+
+			// interakcji z użytkownikiem po 10 iteracjach
+			if (iteracja % 10 == 0) {
+				System.out.println("Zbiór najlepszych  rozwiązań po 10 iteracjach: ");
+				for (int i = 0; i <= 3; i++)
+					System.out.println("Element " + (i + 1) + ": " + popRozw.keySet().toArray()[i] + " – "
+							+ +popRozw.get(popRozw.keySet().toArray()[i]));
+				System.out.println("");
+			}
+			// interakcji z użytkownikiem po wszystkich iter
+			if (iteracja == iter) {
+				Scanner odczyt = new Scanner(System.in);
+				System.out.println("Wykonanic kolejną serie iteracji (1) albo zakończyc działanie programu (0): ");
+				int walue = Integer.parseInt(odczyt.nextLine());
+				if (walue == 1) {
+					System.out.println("Liczba iteracji I: ");
+					iter = Integer.parseInt(odczyt.nextLine());
+					iteracja = 1;
+				} else {
+					end();
+					odczyt.close();
+					System.exit(0);
+				}
+			}
 
 		}
 		end();
@@ -117,7 +116,7 @@ public class algorytm {
 					FC = FC + ((j - i) * create.tab[alphabet.indexOf(lineTokens[i])][alphabet.indexOf(lineTokens[j])]);
 			}
 		}
-		return FC;
+		return FC / 2;
 	}
 
 	private static float MFC() { // metoda obliczya uśrednioną dla wszystkich osobników wartość
@@ -143,9 +142,9 @@ public class algorytm {
 		newOsobnik = newOsobnik.substring(0, index) + alphabet.get(randomIndex1) + newOsobnik.substring(index + 1);
 		int newFC = FC(newOsobnik);
 		if (newFC < FC)
-			mapRozw.put(newOsobnik, newFC);
+			popDoKlon.put(newOsobnik, newFC);
 		else
-			mapRozw.put(key, FC);
+			popDoKlon.put(key, FC);
 
 	}
 
@@ -161,11 +160,11 @@ public class algorytm {
 
 		System.out.println("Zbiór najlepszych  rozwiązań: ");
 		for (int i = 0; i < 4; i++)
-			System.out.println("Element " + i + ": " + mapRozw.keySet().toArray()[i] + " – "
-					+ +mapRozw.get(mapRozw.keySet().toArray()[i]));
+			System.out.println("Element " + i + ": " + popRozw.keySet().toArray()[i] + " – "
+					+ +popRozw.get(popRozw.keySet().toArray()[i]));
 
-		System.out.println("\nRozwiązanie najlepsze: " + mapRozw.keySet().toArray()[0] + " – "
-				+ +mapRozw.get(mapRozw.keySet().toArray()[0]));
+		System.out.println("\nRozwiązanie najlepsze: " + popRozw.keySet().toArray()[0] + " – "
+				+ +popRozw.get(popRozw.keySet().toArray()[0]));
 
 		System.out.println("Koniec programu...");
 	}
